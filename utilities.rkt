@@ -502,9 +502,13 @@
             (if type-error-expected
                 (check-false typechecks "Expected expression to fail typechecking")
                 (test-case "assembly"
-                  (check-not-false typechecks "Expected expression to pass typechecking")
-                  (let ([gcc-output (system (format "gcc -g -std=c99 runtime.o tests/~a.s -o tests/~a.out" test-name test-name))])
-                    (check-not-false gcc-output "Failed during assembly")
+                           (check-not-false typechecks "Expected expression to pass typechecking")
+                           (let ([gcc-output (system (match (system-type 'os)
+                                                       ['macosx
+                                                        (format "clang -g -arch x86_64 -std=c99 runtime.o ./tests/~a.s -o ./tests/~a.out" test-name test-name)]
+                                                       [else
+                                                        (format "gcc -g -march=x86-64 -std=c99 runtime.o ./tests/~a.s -o ./tests/~a.out" test-name test-name)]))])
+                             (check-not-false gcc-output "Failed during assembly")
                     (let ([input (if (file-exists? (format "tests/~a.in" test-name))
                                      (format " < tests/~a.in" test-name)
                                      "")]

@@ -216,8 +216,8 @@
                     (emit-instrs instr*))]))
 
 (define (emit-prelude size)
-  (format "	.globl main
-main:
+  (format "	.globl _main
+_main:
 	pushq %rbp
 	movq %rsp, %rbp
 	subq $~a, %rsp
@@ -240,7 +240,7 @@ conclusion:
      (string-append (emit-labels labels)
                     (emit-prelude stack-size))]))
 
-(define (compile exp)
+(define (compile-exp exp)
   (define gcc (process "gcc runtime.c -x assembler -"))
   (define assembler-stdin (list-ref gcc 0))
   (define assembler-stdout (list-ref gcc 1))
